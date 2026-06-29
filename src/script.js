@@ -1,3 +1,24 @@
+// ====== PASO 1: LOS IMPORTS SIEMPRE VAN EN LA LÍNEA 1 ======
+import { GoogleGenAI } from "https://esm.run/@google/genai";
+
+// ====== PASO 2: INICIALIZAR LA API FUERA DE LA FUNCIÓN ======
+const ai = new GoogleGenAI({ apiKey: "AQ.Ab8RN6IxZ4AqEHBYvAiDGTpaVRQJsq4ayRUGsmbEwfr4NsOR3A" }); // Pega aquí tu clave completa real
+
+// ====== PASO 3: OBTENER LOS ELEMENTOS DEL HTML ======
+const edadInput = document.getElementById('edad');
+const pesoInput = document.getElementById('peso');
+const alturaInput = document.getElementById('altura');
+const sexoSelect = document.getElementById('sexo');
+const objetivoSelect = document.getElementById('objetivo');
+const nivelSelect = document.getElementById('nivel');
+const diasSelect = document.getElementById('dias');
+const resultadoDiv = document.getElementById('resultado');
+const botonGenerar = document.getElementById('generar');
+
+// ====== PASO 4: VINCULAR EL EVENTO CLICK AL BOTÓN ======
+botonGenerar.addEventListener('click', generarRutina);
+
+// ====== PASO 5: LA FUNCIÓN ASÍNCRONA ======
 async function generarRutina() {
     // Convertimos directamente a números para poder validarlos matemáticamente
     const edad = parseInt(edadInput.value.trim(), 10);
