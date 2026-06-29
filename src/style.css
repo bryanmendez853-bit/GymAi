@@ -395,7 +395,37 @@ body {
   to { transform: rotate(360deg); }
 }
 
+/* ─── Footer ────────────────────────────────────────── */
+.lol-footer {
+  text-align: center;
+  margin-top: 3rem;
+  padding: 1.5rem 1rem;
+  border-top: 1px solid var(--border-dim);
+}
+
+.lol-footer-logo {
+  font-size: 1.4rem;
+  margin-bottom: 0.5rem;
+  opacity: 0.3;
+}
+
+.lol-footer-names {
+  font-family: 'Cinzel', serif;
+  font-size: 0.65rem;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: 0.4rem;
+}
+
+.lol-footer-copy {
+  font-size: 0.6rem;
+  color: var(--text-muted);
+  opacity: 0.5;
+  letter-spacing: 0.05em;
+}
 /* ─── Responsive ─────────────────────────────────────── */
+
 @media (max-width: 480px) {
   .field-row {
     grid-template-columns: 1fr;
