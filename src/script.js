@@ -49,7 +49,7 @@ async function generarRutina() {
     resultadoDiv.innerHTML = `
         <div class="d-flex align-items-center gap-2 text-primary">
             <div class="spinner-border spinner-border-sm" role="status"></div>
-            <span>GymAI está diseñando tu rutina personalizada... Por favor espera.</span>
+            <span>Bully Gym está diseñando tu rutina personalizada... Por favor espera.</span>
         </div>
     `;
 
@@ -81,7 +81,7 @@ async function generarRutina() {
         console.error("Error al conectar con la API de Gemini:", error);
         resultadoDiv.innerHTML = `
             <div class="alert alert-danger">
-                <strong>Error:</strong> No se pudo conectar con GymAI. Verifica tu conexión o tu API Key.
+                <strong>Error:</strong> No se pudo conectar con Bully Gym. Verifica tu conexión o tu API Key.
             </div>
         `;
     }
