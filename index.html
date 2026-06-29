@@ -1,133 +1,547 @@
 <!DOCTYPE html>
 <html lang="es">
-
 <head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GymAI — Rutina Personalizada</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;900&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    /* ─── LoL Design Tokens ─────────────────────────────── */
+    :root {
+      --void:       #010A13;
+      --panel:      #0A1428;
+      --card:       #0E1B2E;
+      --border-dim: #1E2D42;
+      --border-mid: #2A3D54;
+      --gold-dark:  #785A28;
+      --gold:       #C89B3C;
+      --gold-light: #F0E6D3;
+      --rune-blue:  #0BC4E3;
+      --rune-dim:   #0A9CB8;
+      --text-prim:  #C8AA6E;
+      --text-sec:   #A09B8C;
+      --text-muted: #5B5A56;
+      --error:      #D44931;
+      --error-bg:   #1A0A08;
+    }
 
-    <meta charset="UTF-8">
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    body {
+      background-color: var(--void);
+      background-image:
+        radial-gradient(ellipse 80% 60% at 50% 0%, #0D1B2E 0%, transparent 70%),
+        radial-gradient(ellipse 60% 40% at 80% 100%, #0A1428 0%, transparent 60%);
+      min-height: 100vh;
+      font-family: 'Inter', sans-serif;
+      color: var(--text-prim);
+      padding: 2rem 1rem 4rem;
+    }
 
-    <title>Gym AI</title>
+    /* ─── Card ──────────────────────────────────────────── */
+    .lol-card {
+      background: var(--card);
+      border: 1px solid var(--border-dim);
+      border-radius: 4px;
+      max-width: 580px;
+      margin: 0 auto 1.5rem;
+      padding: 2rem 2rem 1.75rem;
+      position: relative;
+      box-shadow:
+        0 0 0 1px var(--border-dim),
+        inset 0 1px 0 0 var(--gold-dark),
+        0 8px 32px rgba(0,0,0,0.6);
+    }
 
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
+    .lol-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, transparent 0%, var(--gold-dark) 15%, var(--gold) 50%, var(--gold-dark) 85%, transparent 100%);
+      border-radius: 4px 4px 0 0;
+    }
 
-    <link rel="stylesheet" href="style.css">
+    .lol-card::after {
+      content: '';
+      position: absolute;
+      top: -4px; left: 50%;
+      transform: translateX(-50%) rotate(45deg);
+      width: 7px; height: 7px;
+      background: var(--gold);
+      box-shadow: 0 0 8px var(--gold);
+    }
 
+    /* ─── Header ────────────────────────────────────────── */
+    .lol-title {
+      font-family: 'Cinzel', serif;
+      font-size: 1.85rem;
+      font-weight: 900;
+      color: var(--gold-light);
+      text-align: center;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      line-height: 1.1;
+      margin-bottom: 0.3rem;
+      text-shadow: 0 0 20px rgba(200,155,60,0.4);
+    }
+
+    .lol-subtitle {
+      font-family: 'Cinzel', serif;
+      font-size: 0.62rem;
+      color: var(--gold-dark);
+      text-align: center;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      margin-bottom: 1.75rem;
+    }
+
+    /* ─── Divider ───────────────────────────────────────── */
+    .lol-divider {
+      border: none;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--border-mid) 30%, var(--gold-dark) 50%, var(--border-mid) 70%, transparent);
+      margin: 1.25rem 0;
+    }
+
+    /* ─── Form ──────────────────────────────────────────── */
+    .field-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+      margin-bottom: 1rem;
+    }
+
+    .field-full { margin-bottom: 1rem; }
+
+    .field-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.3rem;
+    }
+
+    .field-label {
+      font-family: 'Cinzel', serif;
+      font-size: 0.62rem;
+      font-weight: 600;
+      color: var(--gold);
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+    }
+
+    .field-hint {
+      font-size: 0.68rem;
+      color: var(--text-muted);
+      margin-top: 0.1rem;
+    }
+
+    /* ─── Inputs & Selects ──────────────────────────────── */
+    .lol-input,
+    .lol-select {
+      width: 100%;
+      padding: 0.6rem 0.85rem;
+      background: var(--panel);
+      border: 1px solid var(--border-dim);
+      border-radius: 2px;
+      color: var(--text-prim);
+      font-family: 'Inter', sans-serif;
+      font-size: 0.88rem;
+      outline: none;
+      appearance: none;
+      -webkit-appearance: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    .lol-input::placeholder { color: var(--text-muted); }
+
+    .lol-input:focus,
+    .lol-select:focus {
+      border-color: var(--gold-dark);
+      box-shadow: 0 0 0 1px var(--gold-dark), 0 0 10px rgba(200,155,60,0.15);
+    }
+
+    .lol-input.error {
+      border-color: var(--error);
+      box-shadow: 0 0 0 1px var(--error);
+      background: var(--error-bg);
+    }
+
+    .select-wrap { position: relative; }
+
+    .select-wrap::after {
+      content: '';
+      position: absolute;
+      right: 0.9rem;
+      top: 50%;
+      transform: translateY(-50%);
+      border-left: 4px solid transparent;
+      border-right: 4px solid transparent;
+      border-top: 5px solid var(--gold-dark);
+      pointer-events: none;
+    }
+
+    .lol-select option { background: var(--panel); color: var(--text-prim); }
+
+    /* ─── Error messages ────────────────────────────────── */
+    .error-msg {
+      font-size: 0.68rem;
+      color: var(--error);
+      display: none;
+      margin-top: 0.15rem;
+    }
+    .error-msg.show { display: block; }
+
+    /* ─── Day bar ───────────────────────────────────────── */
+    .days-bar {
+      display: flex;
+      gap: 0.35rem;
+      margin-top: 0.5rem;
+    }
+
+    .day-dot {
+      flex: 1;
+      height: 4px;
+      background: var(--border-dim);
+      transition: background 0.25s, box-shadow 0.25s;
+    }
+
+    .day-dot.active {
+      background: var(--gold);
+      box-shadow: 0 0 6px rgba(200,155,60,0.6);
+    }
+
+    /* ─── Button ────────────────────────────────────────── */
+    .btn-gen {
+      width: 100%;
+      padding: 0.85rem 1rem;
+      background: linear-gradient(180deg, #1A2A3A 0%, #0E1B2E 100%);
+      border: 1px solid var(--gold-dark);
+      border-radius: 2px;
+      color: var(--gold-light);
+      font-family: 'Cinzel', serif;
+      font-size: 0.85rem;
+      font-weight: 700;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      cursor: pointer;
+      position: relative;
+      transition: all 0.2s;
+      box-shadow: inset 0 1px 0 rgba(200,155,60,0.2);
+    }
+
+    .btn-gen::before, .btn-gen::after {
+      content: '';
+      position: absolute;
+      top: 3px; bottom: 3px;
+      width: 1px;
+      background: linear-gradient(180deg, transparent, var(--gold-dark) 30%, var(--gold-dark) 70%, transparent);
+    }
+    .btn-gen::before { left: 6px; }
+    .btn-gen::after  { right: 6px; }
+
+    .btn-gen:hover:not(:disabled) {
+      border-color: var(--gold);
+      box-shadow: inset 0 1px 0 rgba(200,155,60,0.3), 0 0 24px rgba(200,155,60,0.2);
+      background: linear-gradient(180deg, #1E3040 0%, #0E2035 100%);
+    }
+
+    .btn-gen:active:not(:disabled) { transform: scale(0.99); }
+    .btn-gen:disabled { opacity: 0.4; cursor: not-allowed; }
+
+    /* ─── Result card ───────────────────────────────────── */
+    .result-card {
+      display: none;
+      background: var(--card);
+      border: 1px solid var(--border-dim);
+      border-radius: 4px;
+      max-width: 580px;
+      margin: 0 auto;
+      padding: 1.75rem 2rem;
+      box-shadow:
+        0 0 0 1px var(--border-dim),
+        inset 0 1px 0 0 var(--gold-dark),
+        0 8px 32px rgba(0,0,0,0.6);
+      position: relative;
+    }
+
+    .result-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--rune-dim) 20%, var(--rune-blue) 50%, var(--rune-dim) 80%, transparent);
+      border-radius: 4px 4px 0 0;
+    }
+
+    .result-card.show { display: block; }
+
+    .result-title {
+      font-family: 'Cinzel', serif;
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--rune-blue);
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      margin-bottom: 1rem;
+      padding-bottom: 0.75rem;
+      border-bottom: 1px solid var(--border-dim);
+    }
+
+    .result-body {
+      font-size: 0.875rem;
+      color: var(--text-sec);
+      line-height: 1.8;
+    }
+
+    .result-body strong {
+      display: block;
+      margin-top: 1rem;
+      color: var(--gold);
+      font-family: 'Cinzel', serif;
+      font-size: 0.8rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+
+    /* ─── Loading ───────────────────────────────────────── */
+    .loading-state {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      color: var(--text-sec);
+      font-size: 0.85rem;
+    }
+
+    .loading-rune {
+      width: 18px; height: 18px;
+      border: 2px solid var(--border-mid);
+      border-top-color: var(--rune-blue);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      flex-shrink: 0;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ─── Error inline ──────────────────────────────────── */
+    .inline-error {
+      font-size: 0.8rem;
+      color: var(--error);
+      background: var(--error-bg);
+      border: 1px solid var(--error);
+      border-radius: 2px;
+      padding: 0.6rem 0.85rem;
+    }
+
+    /* ─── Responsive ─────────────────────────────────────── */
+    @media (max-width: 480px) {
+      .field-row { grid-template-columns: 1fr; }
+      .lol-title { font-size: 1.45rem; }
+      .lol-card, .result-card { padding: 1.5rem 1.25rem; }
+    }
+  </style>
 </head>
-
 <body>
 
-<div class="container mt-5">
+  <!-- ── Form card ─────────────────────────────────────── -->
+  <div class="lol-card">
+    <h1 class="lol-title">GymAI</h1>
+    <p class="lol-subtitle">Forja tu rutina · Domina tu cuerpo</p>
 
-    <div class="card shadow p-4">
+    <hr class="lol-divider" />
 
-        <h2 class="text-center mb-4">
-             Gym AI
-        </h2>
-
-<div class="mb-3">
-            <label>Edad</label>
-            <input type="number" id="edad" class="form-control" min="15">
-        </div>
-
-        <div class="mb-3">
-            <label>Peso (kg)</label>
-            <input type="number" id="peso" class="form-control" min="30">
-        </div>
-
-        <div class="mb-3">
-            <label>Altura (cm)</label>
-            <input type="number" id="altura" class="form-control" min="140">
-        </div>
-
-        <div class="mb-3">
-
-            <label>Sexo</label>
-
-            <select id="sexo" class="form-select">
-
-                <option>Hombre</option>
-
-                <option>Mujer</option>
-
-            </select>
-
-        </div>
-
-        <div class="mb-3">
-
-            <label>Objetivo</label>
-
-            <select id="objetivo" class="form-select">
-
-                <option>Ganar músculo</option>
-
-                <option>Bajar grasa</option>
-
-                <option>Fuerza</option>
-
-            </select>
-
-        </div>
-
-        <div class="mb-3">
-
-            <label>Nivel</label>
-
-            <select id="nivel" class="form-select">
-
-                <option>Principiante</option>
-
-                <option>Intermedio</option>
-
-                <option>Avanzado</option>
-
-            </select>
-
-        </div>
-
-        <div class="mb-3">
-
-            <label>Días por semana</label>
-
-            <select id="dias" class="form-select">
-
-                <option>3</option>
-
-                <option>4</option>
-
-                <option>5</option>
-
-                <option>6</option>
-
-            </select>
-
-        </div>
-
-        <button class="btn btn-primary w-100" id="generar">
-
-            Generar Rutina
-
-        </button>
-
+    <!-- Edad / Peso / Altura -->
+    <div class="field-row">
+      <div class="field-group">
+        <label class="field-label" for="edad">Edad</label>
+        <input class="lol-input" id="edad" type="number" min="1" placeholder="25" />
+        <span class="field-hint">años</span>
+      </div>
+      <div class="field-group">
+        <label class="field-label" for="peso">Peso</label>
+        <input class="lol-input" id="peso" type="number" min="1" step="0.1" placeholder="70" />
+        <span class="field-hint">kg</span>
+      </div>
     </div>
 
-    <div class="card mt-4 p-4 shadow">
-
-        <h3>Resultado</h3>
-
-        <div id="resultado">
-
-            Aquí aparecerá la rutina.
-
-        </div>
-
+    <div class="field-full field-group">
+      <label class="field-label" for="altura">Altura</label>
+      <input class="lol-input" id="altura" type="number" min="1" placeholder="175" />
+      <span class="field-hint">cm</span>
     </div>
 
-</div>
+    <hr class="lol-divider" />
 
-<script type="module" src="src/script.js"></script>
+    <!-- Sexo / Nivel -->
+    <div class="field-row">
+      <div class="field-group">
+        <label class="field-label" for="sexo">Sexo</label>
+        <div class="select-wrap">
+          <select class="lol-select" id="sexo">
+            <option value="Masculino">Masculino</option>
+            <option value="Femenino">Femenino</option>
+            <option value="Otro">Otro</option>
+          </select>
+        </div>
+      </div>
+      <div class="field-group">
+        <label class="field-label" for="nivel">Nivel</label>
+        <div class="select-wrap">
+          <select class="lol-select" id="nivel">
+            <option value="Principiante">Principiante</option>
+            <option value="Intermedio">Intermedio</option>
+            <option value="Avanzado">Avanzado</option>
+          </select>
+        </div>
+      </div>
+    </div>
 
+    <!-- Objetivo -->
+    <div class="field-full field-group">
+      <label class="field-label" for="objetivo">Objetivo</label>
+      <div class="select-wrap">
+        <select class="lol-select" id="objetivo">
+          <option value="Perder grasa">Perder grasa</option>
+          <option value="Ganar músculo">Ganar músculo</option>
+          <option value="Mejorar resistencia">Mejorar resistencia</option>
+          <option value="Mantenimiento">Mantenimiento</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Días -->
+    <div class="field-full field-group">
+      <label class="field-label" for="dias">Días por semana</label>
+      <div class="select-wrap">
+        <select class="lol-select" id="dias">
+          <option value="2">2 días</option>
+          <option value="3" selected>3 días</option>
+          <option value="4">4 días</option>
+          <option value="5">5 días</option>
+          <option value="6">6 días</option>
+        </select>
+      </div>
+      <div class="days-bar" id="daysBar">
+        <div class="day-dot"></div>
+        <div class="day-dot"></div>
+        <div class="day-dot active"></div>
+        <div class="day-dot active"></div>
+        <div class="day-dot active"></div>
+        <div class="day-dot"></div>
+        <div class="day-dot"></div>
+      </div>
+    </div>
+
+    <hr class="lol-divider" />
+
+    <button class="btn-gen" id="generar">⚔ Generar Rutina</button>
+  </div>
+
+  <!-- ── Result card ────────────────────────────────────── -->
+  <div class="result-card" id="resultCard">
+    <div class="result-title">▸ Tu Rutina Personalizada</div>
+    <div class="result-body" id="resultado"></div>
+  </div>
+
+  <script type="module">
+    import { GoogleGenAI } from "https://esm.run/@google/genai";
+
+    const ai = new GoogleGenAI({ apiKey: "AQ.Ab8RN6IxZ4AqEHBYvAiDGTpaVRQJsq4ayRUGsmbEwfr4NsOR3A" });
+
+    const edadInput    = document.getElementById('edad');
+    const pesoInput    = document.getElementById('peso');
+    const alturaInput  = document.getElementById('altura');
+    const sexoSelect   = document.getElementById('sexo');
+    const objetivoSelect = document.getElementById('objetivo');
+    const nivelSelect  = document.getElementById('nivel');
+    const diasSelect   = document.getElementById('dias');
+    const resultadoDiv = document.getElementById('resultado');
+    const resultCard   = document.getElementById('resultCard');
+    const botonGenerar = document.getElementById('generar');
+    const daysBar      = document.getElementById('daysBar');
+    const dots         = daysBar.querySelectorAll('.day-dot');
+
+    // Update day bar on select change
+    diasSelect.addEventListener('change', updateDayBar);
+    updateDayBar();
+
+    function updateDayBar() {
+      const n = parseInt(diasSelect.value, 10);
+      dots.forEach((d, i) => d.classList.toggle('active', i < n));
+    }
+
+    botonGenerar.addEventListener('click', generarRutina);
+
+    async function generarRutina() {
+      const edad   = parseInt(edadInput.value.trim(), 10);
+      const peso   = parseFloat(pesoInput.value.trim());
+      const altura = parseFloat(alturaInput.value.trim());
+      const sexo      = sexoSelect.value;
+      const objetivo  = objetivoSelect.value;
+      const nivel     = nivelSelect.value;
+      const dias      = diasSelect.value;
+
+      // Clear previous errors
+      [edadInput, pesoInput, alturaInput].forEach(el => el.classList.remove('error'));
+
+      if (!edadInput.value || !pesoInput.value || !alturaInput.value) {
+        showError('Completa edad, peso y altura antes de continuar.');
+        [edadInput, pesoInput, alturaInput].forEach(el => { if (!el.value) el.classList.add('error'); });
+        return;
+      }
+
+      if (edad <= 0 || peso <= 0 || altura <= 0) {
+        showError('Edad, peso y altura deben ser mayores a cero.');
+        return;
+      }
+
+      // Show loading
+      resultCard.classList.add('show');
+      resultadoDiv.innerHTML = `
+        <div class="loading-state">
+          <div class="loading-rune"></div>
+          <span>Forjando tu rutina... un momento.</span>
+        </div>`;
+
+      botonGenerar.disabled = true;
+
+      const prompt = `Actúa como un entrenador personal experto y certificado. Genera una rutina de gimnasio altamente personalizada con estos datos:
+- Edad: ${edad} años
+- Peso: ${peso} kg
+- Altura: ${altura} cm
+- Sexo: ${sexo}
+- Objetivo: ${objetivo}
+- Nivel: ${nivel}
+- Días por semana: ${dias}
+
+Estructura la respuesta por días con títulos en negrita, listando ejercicios, series, repeticiones y descansos. Ve directo a la rutina sin introducciones.`;
+
+      try {
+        const response = await ai.models.generateContent({
+          model: 'gemini-2.5-flash',
+          contents: prompt,
+        });
+
+        const texto = response.text
+          .replace(/\n/g, '<br>')
+          .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+
+        resultadoDiv.innerHTML = texto;
+
+      } catch (err) {
+        console.error(err);
+        showError('No se pudo conectar con GymAI. Verifica tu conexión o tu API Key.');
+      }
+
+      botonGenerar.disabled = false;
+    }
+
+    function showError(msg) {
+      resultCard.classList.add('show');
+      resultadoDiv.innerHTML = `<div class="inline-error">⚠ ${msg}</div>`;
+    }
+  </script>
 </body>
-
 </html>
